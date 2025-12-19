@@ -3,12 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MindMatrix - Ultimate Aptitude Logic Game</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@700&display=swap"
         rel="stylesheet">
-    <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/js-confetti@0.11.0/dist/js-confetti.browser.js"></script>
     <style>
         :root {
@@ -20,7 +20,6 @@
             --text-main: #e0e0ff;
             --text-dim: #707090;
             --glass-bg: rgba(10, 10, 25, 0.7);
-            --neon-glow: 0 0 10px rgba(0, 243, 255, 0.5);
             --border-neon: 1px solid rgba(0, 243, 255, 0.3);
         }
 
@@ -29,34 +28,35 @@
             margin: 0;
             padding: 0;
             font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-dark);
+            background: var(--bg-dark);
             background-image:
                 linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
             background-size: 50px 50px;
-            height: 100vh;
-            width: 100vw;
+            min-height: 100vh;
+            width: 100%;
             color: var(--text-main);
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            padding: 15px;
             position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
-        /* Scanline Animation */
         body::after {
-            content: " ";
-            position: absolute;
+            content: "";
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
             background-size: 100% 2px, 3px 100%;
             pointer-events: none;
             z-index: 100;
@@ -65,11 +65,12 @@
         .container {
             width: 100%;
             max-width: 1000px;
-            height: 100%;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10;
+            padding: 10px;
         }
 
         .card {
@@ -78,14 +79,28 @@
             -webkit-backdrop-filter: blur(15px);
             border: var(--border-neon);
             border-radius: 20px;
-            padding: 3vh 40px;
+            padding: clamp(15px, 3vh, 35px);
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 243, 255, 0.1);
             position: relative;
             width: 100%;
-            max-height: 96vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            max-height: 98vh;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 5px;
+            }
+
+            .card {
+                max-height: none;
+                border-radius: 12px;
+                padding: 15px 12px;
+                margin-top: env(safe-area-inset-top, 10px);
+                margin-bottom: env(safe-area-inset-bottom, 10px);
+            }
         }
 
         .header-top {
@@ -93,34 +108,32 @@
             margin-bottom: 8px;
             width: 100%;
             border-left: 4px solid var(--neon-cyan);
-            padding-left: 20px;
+            padding-left: 15px;
+            flex-shrink: 0;
         }
 
         h1 {
             font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
-            font-size: clamp(2rem, 5vh, 2.8rem);
+            font-size: clamp(1.4rem, 4.5vh, 2.4rem);
             color: var(--neon-cyan);
             text-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
             text-transform: uppercase;
-            letter-spacing: -1px;
         }
 
         .subtitle {
             color: var(--neon-purple);
-            font-size: clamp(0.7rem, 1.6vh, 1rem);
-            letter-spacing: 4px;
+            font-size: clamp(0.55rem, 1.4vh, 0.8rem);
+            letter-spacing: 2px;
             text-transform: uppercase;
             font-weight: 600;
-            text-shadow: 0 0 8px rgba(188, 19, 254, 0.4);
         }
 
-        /* HUD Timer Bar */
         .q-timer-container {
             width: 100%;
             height: 4px;
             background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             overflow: hidden;
             flex-shrink: 0;
             border-radius: 2px;
@@ -134,74 +147,73 @@
             transition: width 0.1s linear;
         }
 
-        /* Tech Mode Selector */
         .mode-scroll-container {
             display: flex;
-            overflow-x: auto;
-            gap: 12px;
-            padding-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-bottom: 15px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--neon-cyan) transparent;
             flex-shrink: 0;
+            justify-content: flex-start;
         }
 
-        .mode-scroll-container::-webkit-scrollbar {
-            height: 3px;
-        }
-
-        .mode-scroll-container::-webkit-scrollbar-thumb {
-            background: var(--neon-cyan);
-            border-radius: 10px;
+        @media (max-width: 600px) {
+            .mode-scroll-container {
+                gap: 6px;
+            }
         }
 
         .mode-btn {
             background: rgba(0, 243, 255, 0.05);
             border: 1px solid rgba(0, 243, 255, 0.2);
             color: var(--text-main);
-            padding: 8px 20px;
+            padding: 6px 12px;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
-            white-space: nowrap;
-            font-size: clamp(0.7rem, 1.4vh, 0.85rem);
+            font-size: clamp(0.6rem, 1.3vh, 0.75rem);
             text-transform: uppercase;
             letter-spacing: 1px;
+            min-height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .mode-btn.active {
             background: rgba(0, 243, 255, 0.15);
             border-color: var(--neon-cyan);
             color: var(--neon-cyan);
-            box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.2), 0 0 15px rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
         }
 
         .header-stats {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             background: rgba(0, 0, 0, 0.4);
-            padding: clamp(8px, 2vh, 12px) 30px;
+            padding: 10px;
             border-radius: 4px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             flex-shrink: 0;
+            gap: 10px;
         }
 
         .stat-item {
-            text-align: left;
+            text-align: center;
+            flex: 1;
         }
 
         .stat-val {
             display: block;
-            font-size: clamp(1.2rem, 2.8vh, 1.6rem);
+            font-size: clamp(0.85rem, 2.5vh, 1.3rem);
             font-weight: 700;
             color: var(--neon-cyan);
             font-family: 'JetBrains Mono', monospace;
         }
 
         .stat-lbl {
-            font-size: 0.6rem;
+            font-size: 0.5rem;
             color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -213,77 +225,95 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            padding: 10px 0;
+            width: 100%;
             min-height: 0;
+            padding: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            #game-area {
+                min-height: 250px;
+            }
         }
 
         .puzzle-title {
-            font-size: clamp(1rem, 2vh, 1.2rem);
-            margin-bottom: 12px;
+            font-size: clamp(0.8rem, 1.8vh, 1.1rem);
+            margin-bottom: 10px;
             color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 2px;
+            text-align: center;
         }
 
         .options-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            max-width: 450px;
-            margin-top: 20px;
+            max-width: 400px;
+            margin-top: 15px;
             flex-shrink: 0;
+        }
+
+        @media (max-width: 350px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .option-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: clamp(10px, 1.8vh, 15px);
+            padding: 12px;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: clamp(1rem, 2.2vh, 1.3rem);
+            font-size: clamp(0.9rem, 2vh, 1.2rem);
             font-weight: 600;
             color: var(--text-main);
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 50px;
-            position: relative;
+            min-height: 48px;
+            text-align: center;
         }
 
-        .option-card:hover {
-            background: rgba(0, 243, 255, 0.08);
+        .option-card:hover,
+        .option-card:active {
+            background: rgba(0, 243, 255, 0.1);
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
         }
 
         .correct {
             border-color: var(--neon-green) !important;
             color: var(--neon-green) !important;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3) !important;
-            background: rgba(0, 255, 136, 0.05) !important;
+            background: rgba(0, 255, 136, 0.1) !important;
         }
 
         .wrong {
             border-color: var(--neon-pink) !important;
             color: var(--neon-pink) !important;
-            box-shadow: 0 0 20px rgba(255, 0, 189, 0.3) !important;
-            background: rgba(255, 0, 189, 0.05) !important;
+            background: rgba(255, 0, 189, 0.1) !important;
         }
 
-        /* Visual Grid HUD Style */
         .visual-grid {
             display: grid;
-            gap: 6px;
+            gap: 4px;
             margin: 0 auto;
-            max-height: 52vh;
+            max-height: 45vh;
             aspect-ratio: 1/1;
-            padding: 10px;
+            padding: 5px;
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(0, 243, 255, 0.1);
             border-radius: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .visual-grid {
+                max-height: 60vw;
+                width: 100%;
+                max-width: min(300px, 85vw);
+            }
         }
 
         .grid-cell {
@@ -294,70 +324,24 @@
             justify-content: center;
             border: 1px solid rgba(255, 255, 255, 0.05);
             color: var(--text-main);
-            transition: all 0.2s;
-        }
-
-        .grid-cell:hover {
-            background: rgba(0, 243, 255, 0.05);
-        }
-
-        .missing {
-            color: var(--neon-pink);
-            font-weight: 900;
-            text-shadow: 0 0 10px var(--neon-pink);
         }
 
         .big-display {
-            font-size: clamp(2.5rem, 7vh, 4.5rem);
+            font-size: clamp(1.8rem, 6vh, 4rem);
             font-weight: 700;
             color: var(--neon-cyan);
             text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-            margin: 15px 0;
+            margin: 10px 0;
             font-family: 'JetBrains Mono', monospace;
-        }
-
-        .memory-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            text-align: center;
             width: 100%;
-            max-width: 320px;
-            aspect-ratio: 1/1;
-        }
-
-        .memory-cell {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .active-cell {
-            background: var(--neon-cyan) !important;
-            box-shadow: 0 0 25px var(--neon-cyan);
-            border-color: #fff;
         }
 
         .stroop-word {
-            font-size: clamp(3rem, 9vh, 6rem);
+            font-size: clamp(2.2rem, 8vh, 5.5rem);
             font-weight: 900;
             text-transform: uppercase;
-            margin: 15px 0;
-            letter-spacing: 4px;
-        }
-
-        .equation-box {
-            font-size: clamp(1.2rem, 3vh, 2rem);
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 700;
-            color: var(--neon-purple);
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border: 1px solid rgba(188, 19, 254, 0.2);
-            border-radius: 8px;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            text-align: center;
         }
 
         .controls {
@@ -365,27 +349,24 @@
             padding-top: 15px;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 12px;
             flex-shrink: 0;
+            width: 100%;
         }
 
         .btn {
-            padding: 10px 35px;
+            padding: 10px;
             border-radius: 4px;
             border: 1px solid var(--neon-cyan);
             background: transparent;
             color: var(--neon-cyan);
-            font-size: clamp(0.8rem, 1.8vh, 0.9rem);
+            font-size: clamp(0.7rem, 1.5vh, 0.85rem);
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .btn:hover {
-            background: rgba(0, 243, 255, 0.1);
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+            flex: 1;
+            max-width: 150px;
+            min-height: 44px;
         }
 
         .btn-next {
@@ -393,25 +374,43 @@
             color: #000;
         }
 
-        .btn-next:hover {
-            background: #fff;
-            box-shadow: 0 0 20px #fff;
-            border-color: #fff;
+        #failure-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
         }
 
-        @media (max-width: 600px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
+        .modal-content {
+            background: var(--glass-bg);
+            border: 2px solid var(--neon-pink);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 0 50px rgba(255, 0, 189, 0.3);
+        }
 
-            .card {
-                padding: 20px;
-            }
-
-            .header-top {
-                border-width: 2px;
-                padding-left: 10px;
-            }
+        .modal-btn {
+            background: var(--neon-pink);
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            width: 100%;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -422,7 +421,7 @@
         <div class="card">
             <div class="header-top">
                 <h1>MindMatrix</h1>
-                <p class="subtitle">AI Logic Console v2.0</p>
+                <p class="subtitle">AI Logic Console v3.0</p>
             </div>
 
             <div class="q-timer-container">
@@ -432,18 +431,12 @@
             <div class="mode-scroll-container" id="mode-selector"></div>
 
             <div class="header-stats">
-                <div class="stat-item">
-                    <span class="stat-lbl">Systems Active</span>
-                    <span class="stat-val" id="stat-attempts">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-lbl">Neural Matches</span>
-                    <span class="stat-val" id="stat-score" style="color: var(--neon-green);">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-lbl">Efficiency</span>
-                    <span class="stat-val" id="stat-accuracy">0%</span>
-                </div>
+                <div class="stat-item"><span class="stat-lbl">Systems</span><span class="stat-val"
+                        id="stat-attempts">0</span></div>
+                <div class="stat-item"><span class="stat-lbl">Matches</span><span class="stat-val" id="stat-score"
+                        style="color: var(--neon-green);">0</span></div>
+                <div class="stat-item"><span class="stat-lbl">Efficiency</span><span class="stat-val"
+                        id="stat-accuracy">0%</span></div>
             </div>
 
             <div id="game-area"></div>
@@ -455,25 +448,34 @@
         </div>
     </div>
 
+    <div id="failure-modal">
+        <div class="modal-content">
+            <h2 style="color:var(--neon-pink); margin-bottom:15px; font-family:'JetBrains Mono'">CRITICAL FAILURE</h2>
+            <p style="margin-bottom:25px;">Neural Buffer Overload. 5 consecutive logic mismatches.</p>
+            <button class="modal-btn" onclick="tryAgain()">Reactivate</button>
+        </div>
+    </div>
+
     <script>
         const jsConfetti = new JSConfetti();
         const MODES = [
-            { id: 'visual', name: 'Visual Matrix' },
-            { id: 'math', name: 'Neural Math' },
-            { id: 'num-series', name: 'Data Streams' },
-            { id: 'let-series', name: 'Codex Pattern' },
-            { id: 'memory', name: 'Link Buffer' },
-            { id: 'stroop', name: 'Signal Noise' },
-            { id: 'symbol-eq', name: 'Logic Gates' },
-            { id: 'mixed', name: 'Total Override' }
+            { id: 'visual', name: 'Visual' },
+            { id: 'math', name: 'Math' },
+            { id: 'num-series', name: 'Series' },
+            { id: 'let-series', name: 'Codex' },
+            { id: 'memory', name: 'Link' },
+            { id: 'stroop', name: 'Signal' },
+            { id: 'symbol-eq', name: 'Gates' },
+            { id: 'mixed', name: 'Override' }
         ];
 
-        const allSymbols = ['■', '●', '▲', '★', '♦', '♣', '♠', '♥', '✖', '✚', '⚛', '❂', '❈', '⦿', '✦', '✺', '☀', '☁'];
-        const colors = ['Cyan', 'Purple', 'Pink', 'Green', 'Yellow', 'Blue', 'Orange', 'Red'];
+        const allSymbols = ['■', '●', '▲', '★', '♦', '♣', '♠', '♥', '✖', '✚', '⚛', '❂', '❈', '⦿'];
+        const colorsArr = ['Cyan', 'Purple', 'Pink', 'Green', 'Yellow', 'Blue', 'Orange', 'Red'];
         const colorHex = { 'Cyan': '#00f3ff', 'Purple': '#bc13fe', 'Pink': '#ff00bd', 'Green': '#00ff88', 'Yellow': '#ffd700', 'Blue': '#0070ff', 'Orange': '#ff8c00', 'Red': '#ff3d67' };
-        const emojis = ['⚡', '🔋', '💾', '🛰', '🛸', '⚛', '⚙', '🧩', '🧪', '🔭', '📡', '🛡'];
+        const emojis = ['⚡', '🔋', '💾', '🛰', '🛸', '⚛', '⚙', '🧩', '🧪', '🔭'];
 
         let currentMode = 'visual';
+        let consecutiveWrongs = 0;
         let stats = {
             attempts: parseInt(localStorage.getItem('mm_attempts_inf')) || 0,
             correct: parseInt(localStorage.getItem('mm_correct_inf')) || 0,
@@ -492,6 +494,7 @@
 
         function renderModeSelector() {
             const container = document.getElementById('mode-selector');
+            container.innerHTML = '';
             MODES.forEach(mode => {
                 const btn = document.createElement('button');
                 btn.className = `mode-btn ${currentMode === mode.id ? 'active' : ''}`;
@@ -503,7 +506,7 @@
 
         function switchMode(id) {
             currentMode = id;
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.innerText === MODES.find(m => m.id === id).name));
+            renderModeSelector();
             initPuzzle();
         }
 
@@ -514,7 +517,6 @@
             document.getElementById('stat-accuracy').innerText = `${acc}%`;
             localStorage.setItem('mm_attempts_inf', stats.attempts);
             localStorage.setItem('mm_correct_inf', stats.correct);
-            localStorage.setItem('mm_incorrect_inf', stats.incorrect);
         }
 
         function resetQuestionTimer() {
@@ -522,31 +524,26 @@
             qTimeLeft = 5;
             const bar = document.getElementById('q-timer-bar');
             bar.style.width = '100%';
-            bar.style.background = 'linear-gradient(90deg, var(--neon-cyan), var(--neon-purple))';
-
             qTimerInterval = setInterval(() => {
                 qTimeLeft -= 0.1;
                 bar.style.width = (qTimeLeft / 5) * 100 + '%';
-                if (qTimeLeft <= 1.5) bar.style.background = 'var(--neon-pink)';
-                if (qTimeLeft <= 0) {
-                    clearInterval(qTimerInterval);
-                    if (!isAnswered) handleTimeout();
-                }
+                if (qTimeLeft <= 0) { clearInterval(qTimerInterval); if (!isAnswered) handleTimeout(); }
             }, 100);
         }
 
         function handleTimeout() {
-            isAnswered = true;
-            stats.attempts++;
-            stats.incorrect++;
-            playSound('fail');
-            updateScoreboard();
-            const area = document.getElementById('game-area');
-            const msg = document.createElement('div');
-            msg.style.cssText = "color:var(--neon-pink); margin-top:5px; font-weight:900; font-size:1.5rem; text-shadow:0 0 10px var(--neon-pink);";
-            msg.innerText = "SYSTEM TIMEOUT";
-            area.appendChild(msg);
-            setTimeout(initPuzzle, 800);
+            submitAnswer(false, null);
+        }
+
+        function showFailure() {
+            clearInterval(qTimerInterval);
+            document.getElementById('failure-modal').style.display = 'flex';
+        }
+
+        function tryAgain() {
+            consecutiveWrongs = 0;
+            document.getElementById('failure-modal').style.display = 'none';
+            initPuzzle();
         }
 
         function initPuzzle() {
@@ -579,16 +576,15 @@
             stats.attempts++;
 
             if (isCorrect) {
-                stats.correct++;
+                stats.correct++; consecutiveWrongs = 0;
                 if (element) element.classList.add('correct');
-                playSound('success');
-                jsConfetti.addConfetti({ emojies: ['⚡', '🌌', '🌠', '🛸'], confettiRadius: 6, confettiNumber: 60 });
+                jsConfetti.addConfetti({ emojies: ['⚡', '🌌'], confettiNumber: 30 });
             } else {
-                stats.incorrect++;
+                stats.incorrect++; consecutiveWrongs++;
                 if (element) element.classList.add('wrong');
-                playSound('fail');
             }
             updateScoreboard();
+            if (consecutiveWrongs >= 5) { setTimeout(showFailure, 500); return; }
             setTimeout(initPuzzle, 800);
         }
 
@@ -606,41 +602,29 @@
             container.appendChild(grid);
         }
 
-        // --- Engines ---
-
         function genVisual(area) {
-            const size = Math.floor(Math.random() * 5) + 4;
+            const size = Math.floor(Math.random() * 4) + 4; // 4 to 7
             const sub = allSymbols.slice(0, size);
             const grid = [];
             for (let i = 0; i < size; i++) grid.push(sub.map((_, j) => sub[(i + j) % size]));
-
             grid.sort(() => Math.random() - 0.5);
-            for (let i = 0; i < size; i++) {
-                const c1 = Math.floor(Math.random() * size), c2 = Math.floor(Math.random() * size);
-                grid.forEach(row => { [row[c1], row[c2]] = [row[c2], row[c1]]; });
-            }
-
             const r = Math.floor(Math.random() * size), c = Math.floor(Math.random() * size);
             const correct = grid[r][c];
-
             const wrap = document.createElement('div');
             wrap.className = 'visual-grid';
             wrap.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
 
-            const cellSize = Math.floor(Math.min(window.innerWidth * 0.8, window.innerHeight * 0.48) / size) - 4;
+            const areaW = area.clientWidth || window.innerWidth;
+            const cellSize = Math.floor(Math.min(areaW * 0.85, 250) / size) - 4;
             wrap.style.width = (cellSize + 4) * size + 'px';
 
             for (let i = 0; i < size; i++) {
                 for (let j = 0; j < size; j++) {
                     const cell = document.createElement('div');
                     cell.className = 'grid-cell';
-                    cell.style.width = cellSize + 'px';
-                    cell.style.height = cellSize + 'px';
+                    cell.style.width = cellSize + 'px'; cell.style.height = cellSize + 'px';
                     cell.style.fontSize = Math.floor(cellSize * 0.6) + 'px';
-                    if (i === r && j === c) {
-                        cell.innerText = '?';
-                        cell.classList.add('missing');
-                    } else cell.innerText = grid[i][j];
+                    if (i === r && j === c) { cell.innerText = '?'; cell.classList.add('active-cell'); } else cell.innerText = grid[i][j];
                     wrap.appendChild(cell);
                 }
             }
@@ -652,57 +636,49 @@
             const ops = ['+', '-', '×'];
             const op = ops[Math.floor(Math.random() * ops.length)];
             let a, b, c, res;
-            if (op === '×') { a = Math.floor(Math.random() * 10) + 2; b = Math.floor(Math.random() * 9) + 2; c = Math.floor(Math.random() * 20); res = a * b + c; }
-            else if (op === '+') { a = Math.floor(Math.random() * 60); b = Math.floor(Math.random() * 60); c = Math.floor(Math.random() * 30); res = a + b + c; }
-            else { a = Math.floor(Math.random() * 120) + 50; b = Math.floor(Math.random() * 50); c = Math.floor(Math.random() * 15); res = a - b + c; }
-
+            if (op === '×') { a = Math.floor(Math.random() * 9) + 2; b = Math.floor(Math.random() * 8) + 2; c = Math.floor(Math.random() * 15); res = a * b + c; }
+            else { a = Math.floor(Math.random() * 50) + 10; b = Math.floor(Math.random() * 40); c = Math.floor(Math.random() * 20); res = a + b + c; if (op === '-') res = a - b + c; }
             const display = document.createElement('div');
             display.className = 'big-display';
-            display.innerHTML = `<span style="color:var(--neon-cyan)">${a}</span> ${op} <span style="color:var(--text-main)">${b}</span> + <span style="color:var(--neon-pink)">?</span> = <span style="color:var(--neon-green)">${res}</span>`;
+            display.innerHTML = `${a} ${op} ${b} + <span style="color:var(--neon-pink)">?</span> = ${res}`;
             area.appendChild(display);
-            createOptions(c.toString(), [c + 1, c - 1, c + 5, c * 2].map(String), area);
+            createOptions(c.toString(), [c + 1, c - 1, c + 5].map(String), area);
         }
 
         function genNumSeries(area) {
-            const types = ['add', 'mul', 'square', 'fib', 'prime', 'alt'];
+            const types = ['add', 'square', 'step'];
             const type = types[Math.floor(Math.random() * types.length)];
-            let series = [], correct, step;
-
-            switch (type) {
-                case 'add': step = Math.floor(Math.random() * 12) + 1; let s1 = Math.floor(Math.random() * 12); for (let i = 0; i < 5; i++) series.push(s1 + i * step); break;
-                case 'mul': step = 2; let s2 = Math.floor(Math.random() * 6) + 1; for (let i = 0; i < 5; i++) series.push(s2 * Math.pow(step, i)); break;
-                case 'square': let s3 = Math.floor(Math.random() * 6) + 1; for (let i = s3; i < s3 + 5; i++) series.push(i * i); break;
-                case 'fib': series = [1, 2, 3, 5, 8]; break;
-                case 'prime': series = [2, 3, 5, 7, 11]; break;
-                case 'alt': step = 6; let s4 = 10; for (let i = 0; i < 5; i++) series.push(i % 2 === 0 ? s4 + (i / 2) * step : s4 + 4 + Math.floor(i / 2) * 2); break;
-            }
+            let series = [], correct, step = Math.floor(Math.random() * 5) + 1;
+            if (type === 'add') { let s = Math.floor(Math.random() * 10); for (let i = 0; i < 5; i++) series.push(s + i * step); }
+            else if (type === 'square') { let s = Math.floor(Math.random() * 4) + 1; for (let i = s; i < s + 5; i++) series.push(i * i); }
+            else { let s = 2; for (let i = 0; i < 5; i++) series.push(s + i * i); }
             correct = series.pop();
             const d = document.createElement('div');
             d.className = 'big-display';
-            d.innerHTML = series.map(n => `<span style="color:var(--text-main)">${n}</span>`).join(', ') + `, <span style="color:var(--neon-pink)">?</span>`;
+            d.innerHTML = series.join(', ') + ', ?';
             area.appendChild(d);
-            createOptions(correct.toString(), [correct + 1, correct - 1, correct + 2, 0].map(String), area);
+            createOptions(correct.toString(), [correct + 1, correct - 1, correct + 2].map(String), area);
         }
 
         function genLetSeries(area) {
             const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const step = Math.floor(Math.random() * 4) + 1;
+            const step = Math.floor(Math.random() * 3) + 1;
             const start = Math.floor(Math.random() * 10);
             let series = [];
             for (let i = 0; i < 4; i++) series.push(alpha[(start + i * step) % 26]);
             const correct = alpha[(start + 4 * step) % 26];
             const d = document.createElement('div');
             d.className = 'big-display';
-            d.innerHTML = series.join(' · ') + ' · <span style="color:var(--neon-pink)">?</span>';
+            d.innerHTML = series.join(' · ') + ' · ?';
             area.appendChild(d);
-            createOptions(correct, [alpha[(start + 1) % 26], 'Z', 'A', 'X'].filter(x => x !== correct), area);
+            createOptions(correct, [alpha[(start + 1) % 26], 'Z', 'A'].filter(x => x !== correct), area);
         }
 
         function genMemory(area) {
             clearInterval(qTimerInterval);
             const title = document.createElement('div');
             title.className = 'puzzle-title';
-            title.innerText = 'BUFFERING SEQUENCE...';
+            title.innerText = 'MEMORIZE';
             area.appendChild(title);
             const grid = document.createElement('div');
             grid.className = 'memory-grid';
@@ -716,8 +692,7 @@
             }
             area.appendChild(grid);
             memorySequence = [];
-            const len = 4 + Math.floor(stats.correct / 30);
-            for (let i = 0; i < Math.min(len, 6); i++) memorySequence.push(Math.floor(Math.random() * 9));
+            for (let i = 0; i < 4; i++) memorySequence.push(Math.floor(Math.random() * 9));
             userSequence = [];
             let j = 0;
             const playback = setInterval(() => {
@@ -725,7 +700,7 @@
                 cells[idx].classList.add('active-cell');
                 setTimeout(() => cells[idx].classList.remove('active-cell'), 400);
                 j++;
-                if (j >= memorySequence.length) { clearInterval(playback); title.innerText = 'REPLICATE BUFFER'; resetQuestionTimer(); }
+                if (j >= memorySequence.length) { clearInterval(playback); title.innerText = 'REPEAT'; resetQuestionTimer(); }
             }, 800);
         }
 
@@ -739,29 +714,28 @@
 
         function genStroop(area) {
             const mode = Math.random() > 0.5 ? 'color' : 'word';
-            const tI = Math.floor(Math.random() * colors.length);
-            const cI = (tI + Math.floor(Math.random() * (colors.length - 1)) + 1) % colors.length;
+            const tI = Math.floor(Math.random() * colorsArr.length);
+            const cI = (tI + 1) % colorsArr.length;
             const title = document.createElement('div');
             title.className = 'puzzle-title';
-            title.innerText = mode === 'color' ? 'CAPTURE INK SIGNAL?' : 'DECODE WRITTEN DATA?';
+            title.innerText = mode === 'color' ? 'INK COLOR?' : 'WORD?';
             area.appendChild(title);
             const word = document.createElement('div');
             word.className = 'stroop-word';
-            word.innerText = colors[tI];
-            word.style.color = colorHex[colors[cI]];
-            word.style.textShadow = `0 0 15px ${colorHex[colors[cI]]}88`;
+            word.innerText = colorsArr[tI];
+            word.style.color = colorHex[colorsArr[cI]];
             area.appendChild(word);
-            const correct = mode === 'color' ? colors[cI] : colors[tI];
-            createOptions(correct, colors.filter(c => c !== correct).slice(0, 3), area);
+            const correct = mode === 'color' ? colorsArr[cI] : colorsArr[tI];
+            createOptions(correct, colorsArr.filter(c => c !== correct).slice(0, 3), area);
         }
 
         function genSymbolMath(area) {
             const e1 = emojis[Math.floor(Math.random() * emojis.length)], e2 = emojis[(Math.floor(Math.random() * emojis.length) + 1) % emojis.length];
-            const v1 = Math.floor(Math.random() * 12) + 1, v2 = Math.floor(Math.random() * 12) + 1;
-            const wrap = document.createElement('div');
-            wrap.className = 'equation-box';
-            wrap.innerHTML = `${e1} + ${e1} = <span style="color:var(--neon-cyan)">${v1 * 2}</span><br>${e1} + ${e2} = <span style="color:var(--neon-green)">${v1 + v2}</span><br>Value of ${e2}?`;
-            area.appendChild(wrap);
+            const v1 = Math.floor(Math.random() * 10) + 1, v2 = Math.floor(Math.random() * 10) + 1;
+            const box = document.createElement('div');
+            box.className = 'equation-box';
+            box.innerHTML = `${e1} + ${e1} = ${v1 * 2}<br>${e1} + ${e2} = ${v1 + v2}<br>Value of ${e2}?`;
+            area.appendChild(box);
             createOptions(v2.toString(), [v1.toString(), (v2 + 1).toString(), (v2 - 1).toString()], area);
         }
 
@@ -772,7 +746,7 @@
                 const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 if (type === 'success') { osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); }
-                else { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, audioCtx.currentTime); }
+                else { osc.frequency.setValueAtTime(120, audioCtx.currentTime); }
                 gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.4);
