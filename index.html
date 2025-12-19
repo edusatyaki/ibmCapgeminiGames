@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMatrix - Ultimate Aptitude Logic Game</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@700&display=swap"
+        rel="stylesheet">
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@0.11.0/dist/js-confetti.browser.js"></script>
+    <style>
+        :root {
+            --bg-dark: #050510;
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-pink: #ff00bd;
+            --neon-green: #00ff88;
+            --text-main: #e0e0ff;
+            --text-dim: #707090;
+            --glass-bg: rgba(10, 10, 25, 0.7);
+            --neon-glow: 0 0 10px rgba(0, 243, 255, 0.5);
+            --border-neon: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            height: 100vh;
+            width: 100vw;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 15px;
+            position: relative;
+        }
+
+        /* Scanline Animation */
+        body::after {
+            content: " ";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: var(--border-neon);
+            border-radius: 20px;
+            padding: 3vh 40px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 243, 255, 0.1);
+            position: relative;
+            width: 100%;
+            max-height: 96vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header-top {
+            text-align: left;
+            margin-bottom: 8px;
+            width: 100%;
+            border-left: 4px solid var(--neon-cyan);
+            padding-left: 20px;
+        }
+
+        h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vh, 2.8rem);
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--neon-purple);
+            font-size: clamp(0.7rem, 1.6vh, 1rem);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(188, 19, 254, 0.4);
+        }
+
+        /* HUD Timer Bar */
+        .q-timer-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 15px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border-radius: 2px;
+        }
+
+        .q-timer-bar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            box-shadow: 0 0 10px var(--neon-cyan);
+            transition: width 0.1s linear;
+        }
+
+        /* Tech Mode Selector */
+        .mode-scroll-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-cyan) transparent;
+            flex-shrink: 0;
+        }
+
+        .mode-scroll-container::-webkit-scrollbar {
+            height: 3px;
+        }
+
+        .mode-scroll-container::-webkit-scrollbar-thumb {
+            background: var(--neon-cyan);
+            border-radius: 10px;
+        }
+
+        .mode-btn {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            color: var(--text-main);
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            white-space: nowrap;
+            font-size: clamp(0.7rem, 1.4vh, 0.85rem);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mode-btn.active {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: inset 0 0 10px rgba(0, 243, 255, 0.2), 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .header-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: clamp(8px, 2vh, 12px) 30px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-val {
+            display: block;
+            font-size: clamp(1.2rem, 2.8vh, 1.6rem);
+            font-weight: 700;
+            color: var(--neon-cyan);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-lbl {
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #game-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 10px 0;
+            min-height: 0;
+        }
+
+        .puzzle-title {
+            font-size: clamp(1rem, 2vh, 1.2rem);
+            margin-bottom: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 450px;
+            margin-top: 20px;
+            flex-shrink: 0;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: clamp(10px, 1.8vh, 15px);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: clamp(1rem, 2.2vh, 1.3rem);
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            position: relative;
+        }
+
+        .option-card:hover {
+            background: rgba(0, 243, 255, 0.08);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+        }
+
+        .correct {
+            border-color: var(--neon-green) !important;
+            color: var(--neon-green) !important;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3) !important;
+            background: rgba(0, 255, 136, 0.05) !important;
+        }
+
+        .wrong {
+            border-color: var(--neon-pink) !important;
+            color: var(--neon-pink) !important;
+            box-shadow: 0 0 20px rgba(255, 0, 189, 0.3) !important;
+            background: rgba(255, 0, 189, 0.05) !important;
+        }
+
+        /* Visual Grid HUD Style */
+        .visual-grid {
+            display: grid;
+            gap: 6px;
+            margin: 0 auto;
+            max-height: 52vh;
+            aspect-ratio: 1/1;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .grid-cell {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .grid-cell:hover {
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .missing {
+            color: var(--neon-pink);
+            font-weight: 900;
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .big-display {
+            font-size: clamp(2.5rem, 7vh, 4.5rem);
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+            margin: 15px 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-width: 320px;
+            aspect-ratio: 1/1;
+        }
+
+        .memory-cell {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .active-cell {
+            background: var(--neon-cyan) !important;
+            box-shadow: 0 0 25px var(--neon-cyan);
+            border-color: #fff;
+        }
+
+        .stroop-word {
+            font-size: clamp(3rem, 9vh, 6rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 15px 0;
+            letter-spacing: 4px;
+        }
+
+        .equation-box {
+            font-size: clamp(1.2rem, 3vh, 2rem);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--neon-purple);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border: 1px solid rgba(188, 19, 254, 0.2);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .controls {
+            margin-top: auto;
+            padding-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 10px 35px;
+            border-radius: 4px;
+            border: 1px solid var(--neon-cyan);
+            background: transparent;
+            color: var(--neon-cyan);
+            font-size: clamp(0.8rem, 1.8vh, 0.9rem);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn:hover {
+            background: rgba(0, 243, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-next {
+            background: var(--neon-cyan);
+            color: #000;
+        }
+
+        .btn-next:hover {
+            background: #fff;
+            box-shadow: 0 0 20px #fff;
+            border-color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .header-top {
+                border-width: 2px;
+                padding-left: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="header-top">
+                <h1>MindMatrix</h1>
+                <p class="subtitle">AI Logic Console v2.0</p>
+            </div>
+
+            <div class="q-timer-container">
+                <div class="q-timer-bar" id="q-timer-bar"></div>
+            </div>
+
+            <div class="mode-scroll-container" id="mode-selector"></div>
+
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="stat-lbl">Systems Active</span>
+                    <span class="stat-val" id="stat-attempts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-lbl">Neural Matches</span>
+                    <span class="stat-val" id="stat-score" style="color: var(--neon-green);">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-lbl">Efficiency</span>
+                    <span class="stat-val" id="stat-accuracy">0%</span>
+                </div>
+            </div>
+
+            <div id="game-area"></div>
+
+            <div class="controls">
+                <button class="btn btn-reload" onclick="initPuzzle()">Reset</button>
+                <button class="btn btn-next" onclick="initPuzzle()">Initiate</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const jsConfetti = new JSConfetti();
+        const MODES = [
+            { id: 'visual', name: 'Visual Matrix' },
+            { id: 'math', name: 'Neural Math' },
+            { id: 'num-series', name: 'Data Streams' },
+            { id: 'let-series', name: 'Codex Pattern' },
+            { id: 'memory', name: 'Link Buffer' },
+            { id: 'stroop', name: 'Signal Noise' },
+            { id: 'symbol-eq', name: 'Logic Gates' },
+            { id: 'mixed', name: 'Total Override' }
+        ];
+
+        const allSymbols = ['■', '●', '▲', '★', '♦', '♣', '♠', '♥', '✖', '✚', '⚛', '❂', '❈', '⦿', '✦', '✺', '☀', '☁'];
+        const colors = ['Cyan', 'Purple', 'Pink', 'Green', 'Yellow', 'Blue', 'Orange', 'Red'];
+        const colorHex = { 'Cyan': '#00f3ff', 'Purple': '#bc13fe', 'Pink': '#ff00bd', 'Green': '#00ff88', 'Yellow': '#ffd700', 'Blue': '#0070ff', 'Orange': '#ff8c00', 'Red': '#ff3d67' };
+        const emojis = ['⚡', '🔋', '💾', '🛰', '🛸', '⚛', '⚙', '🧩', '🧪', '🔭', '📡', '🛡'];
+
+        let currentMode = 'visual';
+        let stats = {
+            attempts: parseInt(localStorage.getItem('mm_attempts_inf')) || 0,
+            correct: parseInt(localStorage.getItem('mm_correct_inf')) || 0,
+            incorrect: parseInt(localStorage.getItem('mm_incorrect_inf')) || 0
+        };
+        let isAnswered = false;
+        let qTimerInterval;
+        let qTimeLeft = 5;
+        let memorySequence = [], userSequence = [];
+
+        function init() {
+            renderModeSelector();
+            updateScoreboard();
+            initPuzzle();
+        }
+
+        function renderModeSelector() {
+            const container = document.getElementById('mode-selector');
+            MODES.forEach(mode => {
+                const btn = document.createElement('button');
+                btn.className = `mode-btn ${currentMode === mode.id ? 'active' : ''}`;
+                btn.innerText = mode.name;
+                btn.onclick = () => switchMode(mode.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function switchMode(id) {
+            currentMode = id;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.innerText === MODES.find(m => m.id === id).name));
+            initPuzzle();
+        }
+
+        function updateScoreboard() {
+            document.getElementById('stat-attempts').innerText = stats.attempts;
+            document.getElementById('stat-score').innerText = stats.correct;
+            const acc = stats.attempts === 0 ? 0 : Math.round((stats.correct / stats.attempts) * 100);
+            document.getElementById('stat-accuracy').innerText = `${acc}%`;
+            localStorage.setItem('mm_attempts_inf', stats.attempts);
+            localStorage.setItem('mm_correct_inf', stats.correct);
+            localStorage.setItem('mm_incorrect_inf', stats.incorrect);
+        }
+
+        function resetQuestionTimer() {
+            clearInterval(qTimerInterval);
+            qTimeLeft = 5;
+            const bar = document.getElementById('q-timer-bar');
+            bar.style.width = '100%';
+            bar.style.background = 'linear-gradient(90deg, var(--neon-cyan), var(--neon-purple))';
+
+            qTimerInterval = setInterval(() => {
+                qTimeLeft -= 0.1;
+                bar.style.width = (qTimeLeft / 5) * 100 + '%';
+                if (qTimeLeft <= 1.5) bar.style.background = 'var(--neon-pink)';
+                if (qTimeLeft <= 0) {
+                    clearInterval(qTimerInterval);
+                    if (!isAnswered) handleTimeout();
+                }
+            }, 100);
+        }
+
+        function handleTimeout() {
+            isAnswered = true;
+            stats.attempts++;
+            stats.incorrect++;
+            playSound('fail');
+            updateScoreboard();
+            const area = document.getElementById('game-area');
+            const msg = document.createElement('div');
+            msg.style.cssText = "color:var(--neon-pink); margin-top:5px; font-weight:900; font-size:1.5rem; text-shadow:0 0 10px var(--neon-pink);";
+            msg.innerText = "SYSTEM TIMEOUT";
+            area.appendChild(msg);
+            setTimeout(initPuzzle, 800);
+        }
+
+        function initPuzzle() {
+            const area = document.getElementById('game-area');
+            area.innerHTML = '';
+            isAnswered = false;
+            resetQuestionTimer();
+
+            let playMode = currentMode;
+            if (currentMode === 'mixed') {
+                const pool = MODES.filter(m => m.id !== 'mixed').map(m => m.id);
+                playMode = pool[Math.floor(Math.random() * pool.length)];
+            }
+
+            switch (playMode) {
+                case 'visual': genVisual(area); break;
+                case 'math': genMath(area); break;
+                case 'num-series': genNumSeries(area); break;
+                case 'let-series': genLetSeries(area); break;
+                case 'memory': genMemory(area); break;
+                case 'stroop': genStroop(area); break;
+                case 'symbol-eq': genSymbolMath(area); break;
+            }
+        }
+
+        function submitAnswer(isCorrect, element) {
+            if (isAnswered) return;
+            isAnswered = true;
+            clearInterval(qTimerInterval);
+            stats.attempts++;
+
+            if (isCorrect) {
+                stats.correct++;
+                if (element) element.classList.add('correct');
+                playSound('success');
+                jsConfetti.addConfetti({ emojies: ['⚡', '🌌', '🌠', '🛸'], confettiRadius: 6, confettiNumber: 60 });
+            } else {
+                stats.incorrect++;
+                if (element) element.classList.add('wrong');
+                playSound('fail');
+            }
+            updateScoreboard();
+            setTimeout(initPuzzle, 800);
+        }
+
+        function createOptions(correct, distractors, container) {
+            const opts = [...new Set([...distractors, correct])].sort(() => Math.random() - 0.5);
+            const grid = document.createElement('div');
+            grid.className = 'options-grid';
+            opts.forEach(opt => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.innerHTML = opt;
+                card.onclick = () => submitAnswer(opt === correct, card);
+                grid.appendChild(card);
+            });
+            container.appendChild(grid);
+        }
+
+        // --- Engines ---
+
+        function genVisual(area) {
+            const size = Math.floor(Math.random() * 5) + 4;
+            const sub = allSymbols.slice(0, size);
+            const grid = [];
+            for (let i = 0; i < size; i++) grid.push(sub.map((_, j) => sub[(i + j) % size]));
+
+            grid.sort(() => Math.random() - 0.5);
+            for (let i = 0; i < size; i++) {
+                const c1 = Math.floor(Math.random() * size), c2 = Math.floor(Math.random() * size);
+                grid.forEach(row => { [row[c1], row[c2]] = [row[c2], row[c1]]; });
+            }
+
+            const r = Math.floor(Math.random() * size), c = Math.floor(Math.random() * size);
+            const correct = grid[r][c];
+
+            const wrap = document.createElement('div');
+            wrap.className = 'visual-grid';
+            wrap.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+            const cellSize = Math.floor(Math.min(window.innerWidth * 0.8, window.innerHeight * 0.48) / size) - 4;
+            wrap.style.width = (cellSize + 4) * size + 'px';
+
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.style.width = cellSize + 'px';
+                    cell.style.height = cellSize + 'px';
+                    cell.style.fontSize = Math.floor(cellSize * 0.6) + 'px';
+                    if (i === r && j === c) {
+                        cell.innerText = '?';
+                        cell.classList.add('missing');
+                    } else cell.innerText = grid[i][j];
+                    wrap.appendChild(cell);
+                }
+            }
+            area.appendChild(wrap);
+            createOptions(correct, sub.filter(s => s !== correct).slice(0, 3), area);
+        }
+
+        function genMath(area) {
+            const ops = ['+', '-', '×'];
+            const op = ops[Math.floor(Math.random() * ops.length)];
+            let a, b, c, res;
+            if (op === '×') { a = Math.floor(Math.random() * 10) + 2; b = Math.floor(Math.random() * 9) + 2; c = Math.floor(Math.random() * 20); res = a * b + c; }
+            else if (op === '+') { a = Math.floor(Math.random() * 60); b = Math.floor(Math.random() * 60); c = Math.floor(Math.random() * 30); res = a + b + c; }
+            else { a = Math.floor(Math.random() * 120) + 50; b = Math.floor(Math.random() * 50); c = Math.floor(Math.random() * 15); res = a - b + c; }
+
+            const display = document.createElement('div');
+            display.className = 'big-display';
+            display.innerHTML = `<span style="color:var(--neon-cyan)">${a}</span> ${op} <span style="color:var(--text-main)">${b}</span> + <span style="color:var(--neon-pink)">?</span> = <span style="color:var(--neon-green)">${res}</span>`;
+            area.appendChild(display);
+            createOptions(c.toString(), [c + 1, c - 1, c + 5, c * 2].map(String), area);
+        }
+
+        function genNumSeries(area) {
+            const types = ['add', 'mul', 'square', 'fib', 'prime', 'alt'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            let series = [], correct, step;
+
+            switch (type) {
+                case 'add': step = Math.floor(Math.random() * 12) + 1; let s1 = Math.floor(Math.random() * 12); for (let i = 0; i < 5; i++) series.push(s1 + i * step); break;
+                case 'mul': step = 2; let s2 = Math.floor(Math.random() * 6) + 1; for (let i = 0; i < 5; i++) series.push(s2 * Math.pow(step, i)); break;
+                case 'square': let s3 = Math.floor(Math.random() * 6) + 1; for (let i = s3; i < s3 + 5; i++) series.push(i * i); break;
+                case 'fib': series = [1, 2, 3, 5, 8]; break;
+                case 'prime': series = [2, 3, 5, 7, 11]; break;
+                case 'alt': step = 6; let s4 = 10; for (let i = 0; i < 5; i++) series.push(i % 2 === 0 ? s4 + (i / 2) * step : s4 + 4 + Math.floor(i / 2) * 2); break;
+            }
+            correct = series.pop();
+            const d = document.createElement('div');
+            d.className = 'big-display';
+            d.innerHTML = series.map(n => `<span style="color:var(--text-main)">${n}</span>`).join(', ') + `, <span style="color:var(--neon-pink)">?</span>`;
+            area.appendChild(d);
+            createOptions(correct.toString(), [correct + 1, correct - 1, correct + 2, 0].map(String), area);
+        }
+
+        function genLetSeries(area) {
+            const alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const step = Math.floor(Math.random() * 4) + 1;
+            const start = Math.floor(Math.random() * 10);
+            let series = [];
+            for (let i = 0; i < 4; i++) series.push(alpha[(start + i * step) % 26]);
+            const correct = alpha[(start + 4 * step) % 26];
+            const d = document.createElement('div');
+            d.className = 'big-display';
+            d.innerHTML = series.join(' · ') + ' · <span style="color:var(--neon-pink)">?</span>';
+            area.appendChild(d);
+            createOptions(correct, [alpha[(start + 1) % 26], 'Z', 'A', 'X'].filter(x => x !== correct), area);
+        }
+
+        function genMemory(area) {
+            clearInterval(qTimerInterval);
+            const title = document.createElement('div');
+            title.className = 'puzzle-title';
+            title.innerText = 'BUFFERING SEQUENCE...';
+            area.appendChild(title);
+            const grid = document.createElement('div');
+            grid.className = 'memory-grid';
+            const cells = [];
+            for (let i = 0; i < 9; i++) {
+                const c = document.createElement('div');
+                c.className = 'memory-cell';
+                c.onclick = () => handleMemoryClick(i, c);
+                grid.appendChild(c);
+                cells.push(c);
+            }
+            area.appendChild(grid);
+            memorySequence = [];
+            const len = 4 + Math.floor(stats.correct / 30);
+            for (let i = 0; i < Math.min(len, 6); i++) memorySequence.push(Math.floor(Math.random() * 9));
+            userSequence = [];
+            let j = 0;
+            const playback = setInterval(() => {
+                const idx = memorySequence[j];
+                cells[idx].classList.add('active-cell');
+                setTimeout(() => cells[idx].classList.remove('active-cell'), 400);
+                j++;
+                if (j >= memorySequence.length) { clearInterval(playback); title.innerText = 'REPLICATE BUFFER'; resetQuestionTimer(); }
+            }, 800);
+        }
+
+        function handleMemoryClick(idx, el) {
+            if (isAnswered) return;
+            userSequence.push(idx);
+            el.classList.add('active-cell');
+            setTimeout(() => el.classList.remove('active-cell'), 200);
+            if (userSequence.length === memorySequence.length) submitAnswer(JSON.stringify(userSequence) === JSON.stringify(memorySequence), el);
+        }
+
+        function genStroop(area) {
+            const mode = Math.random() > 0.5 ? 'color' : 'word';
+            const tI = Math.floor(Math.random() * colors.length);
+            const cI = (tI + Math.floor(Math.random() * (colors.length - 1)) + 1) % colors.length;
+            const title = document.createElement('div');
+            title.className = 'puzzle-title';
+            title.innerText = mode === 'color' ? 'CAPTURE INK SIGNAL?' : 'DECODE WRITTEN DATA?';
+            area.appendChild(title);
+            const word = document.createElement('div');
+            word.className = 'stroop-word';
+            word.innerText = colors[tI];
+            word.style.color = colorHex[colors[cI]];
+            word.style.textShadow = `0 0 15px ${colorHex[colors[cI]]}88`;
+            area.appendChild(word);
+            const correct = mode === 'color' ? colors[cI] : colors[tI];
+            createOptions(correct, colors.filter(c => c !== correct).slice(0, 3), area);
+        }
+
+        function genSymbolMath(area) {
+            const e1 = emojis[Math.floor(Math.random() * emojis.length)], e2 = emojis[(Math.floor(Math.random() * emojis.length) + 1) % emojis.length];
+            const v1 = Math.floor(Math.random() * 12) + 1, v2 = Math.floor(Math.random() * 12) + 1;
+            const wrap = document.createElement('div');
+            wrap.className = 'equation-box';
+            wrap.innerHTML = `${e1} + ${e1} = <span style="color:var(--neon-cyan)">${v1 * 2}</span><br>${e1} + ${e2} = <span style="color:var(--neon-green)">${v1 + v2}</span><br>Value of ${e2}?`;
+            area.appendChild(wrap);
+            createOptions(v2.toString(), [v1.toString(), (v2 + 1).toString(), (v2 - 1).toString()], area);
+        }
+
+        function playSound(type) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                if (type === 'success') { osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); }
+                else { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, audioCtx.currentTime); }
+                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } catch (e) { }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>
