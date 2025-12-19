@@ -19,7 +19,7 @@
             --neon-green: #00ff88;
             --text-main: #e0e0ff;
             --text-dim: #707090;
-            --glass-bg: rgba(10, 10, 25, 0.7);
+            --glass-bg: rgba(10, 10, 25, 0.82);
             --border-neon: 1px solid rgba(0, 243, 255, 0.3);
         }
 
@@ -75,8 +75,8 @@
 
         .card {
             background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: var(--border-neon);
             border-radius: 20px;
             padding: clamp(15px, 3vh, 35px);
@@ -98,14 +98,13 @@
                 max-height: none;
                 border-radius: 12px;
                 padding: 15px 12px;
-                margin-top: env(safe-area-inset-top, 10px);
-                margin-bottom: env(safe-area-inset-bottom, 10px);
+                margin: 10px 0;
             }
         }
 
         .header-top {
             text-align: left;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             width: 100%;
             border-left: 4px solid var(--neon-cyan);
             padding-left: 15px;
@@ -133,7 +132,7 @@
             width: 100%;
             height: 4px;
             background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             overflow: hidden;
             flex-shrink: 0;
             border-radius: 2px;
@@ -156,25 +155,18 @@
             justify-content: flex-start;
         }
 
-        @media (max-width: 600px) {
-            .mode-scroll-container {
-                gap: 6px;
-            }
-        }
-
         .mode-btn {
-            background: rgba(0, 243, 255, 0.05);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            color: var(--text-main);
-            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+            padding: 6px 14px;
             border-radius: 4px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
             font-size: clamp(0.6rem, 1.3vh, 0.75rem);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            min-height: 34px;
+            min-height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -190,7 +182,7 @@
         .header-stats {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             background: rgba(0, 0, 0, 0.4);
             padding: 10px;
             border-radius: 4px;
@@ -206,7 +198,7 @@
 
         .stat-val {
             display: block;
-            font-size: clamp(0.85rem, 2.5vh, 1.3rem);
+            font-size: clamp(1rem, 2.5vh, 1.4rem);
             font-weight: 700;
             color: var(--neon-cyan);
             font-family: 'JetBrains Mono', monospace;
@@ -226,19 +218,13 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            min-height: 0;
-            padding: 10px 0;
-        }
-
-        @media (max-width: 600px) {
-            #game-area {
-                min-height: 250px;
-            }
+            min-height: 250px;
+            padding: 15px 0;
         }
 
         .puzzle-title {
-            font-size: clamp(0.8rem, 1.8vh, 1.1rem);
-            margin-bottom: 10px;
+            font-size: clamp(0.9rem, 1.8vh, 1.2rem);
+            margin-bottom: 15px;
             color: var(--text-dim);
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -248,33 +234,33 @@
         .options-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 12px;
             width: 100%;
-            max-width: 400px;
-            margin-top: 15px;
+            max-width: 450px;
+            margin-top: 20px;
             flex-shrink: 0;
         }
 
-        @media (max-width: 350px) {
+        @media (max-width: 400px) {
             .options-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         .option-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            border-radius: 4px;
+            padding: 15px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: clamp(0.9rem, 2vh, 1.2rem);
+            font-size: clamp(1rem, 2vh, 1.3rem);
             font-weight: 600;
             color: var(--text-main);
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 48px;
+            min-height: 52px;
             text-align: center;
         }
 
@@ -282,6 +268,7 @@
         .option-card:active {
             background: rgba(0, 243, 255, 0.1);
             border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
         }
 
         .correct {
@@ -296,82 +283,100 @@
             background: rgba(255, 0, 189, 0.1) !important;
         }
 
-        .visual-grid {
+        .visual-grid,
+        .memory-grid {
             display: grid;
-            gap: 4px;
+            gap: 6px;
             margin: 0 auto;
             max-height: 45vh;
             aspect-ratio: 1/1;
-            padding: 5px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(0, 243, 255, 0.1);
-            border-radius: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 243, 255, 0.15);
+            border-radius: 12px;
+            width: 100%;
+            max-width: min(350px, 88vw);
         }
 
-        @media (max-width: 600px) {
-            .visual-grid {
-                max-height: 60vw;
-                width: 100%;
-                max-width: min(300px, 85vw);
-            }
-        }
-
-        .grid-cell {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 4px;
+        .grid-cell,
+        .memory-cell {
+            background: rgba(255, 255, 255, 0.08);
+            /* Brighter base */
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-main);
+            transition: 0.2s;
+        }
+
+        .memory-cell {
+            cursor: pointer;
+        }
+
+        .memory-cell:hover {
+            border-color: var(--neon-cyan);
+        }
+
+        .active-cell {
+            background: var(--neon-cyan) !important;
+            box-shadow: 0 0 25px var(--neon-cyan);
+            border-color: #fff !important;
         }
 
         .big-display {
-            font-size: clamp(1.8rem, 6vh, 4rem);
+            font-size: clamp(2rem, 7vh, 4.5rem);
             font-weight: 700;
             color: var(--neon-cyan);
             text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-            margin: 10px 0;
+            margin: 15px 0;
             font-family: 'JetBrains Mono', monospace;
             text-align: center;
             width: 100%;
         }
 
-        .stroop-word {
-            font-size: clamp(2.2rem, 8vh, 5.5rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            text-align: center;
+        .equation-box {
+            font-size: clamp(1rem, 2.5vh, 1.8rem);
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border: 1px solid rgba(188, 19, 254, 0.3);
+            border-radius: 12px;
+            line-height: 1.6;
+            width: 100%;
+            max-width: 450px;
         }
 
         .controls {
             margin-top: auto;
-            padding-top: 15px;
+            padding-top: 20px;
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 15px;
             flex-shrink: 0;
             width: 100%;
         }
 
         .btn {
-            padding: 10px;
-            border-radius: 4px;
+            padding: 12px;
+            border-radius: 6px;
             border: 1px solid var(--neon-cyan);
             background: transparent;
             color: var(--neon-cyan);
-            font-size: clamp(0.7rem, 1.5vh, 0.85rem);
+            font-size: clamp(0.75rem, 1.6vh, 0.95rem);
             font-weight: 700;
             cursor: pointer;
             text-transform: uppercase;
             flex: 1;
-            max-width: 150px;
-            min-height: 44px;
+            max-width: 160px;
+            min-height: 48px;
         }
 
         .btn-next {
             background: var(--neon-cyan);
             color: #000;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
         }
 
         #failure-modal {
@@ -380,37 +385,38 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(12px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            padding: 20px;
+            padding: 25px;
         }
 
         .modal-content {
             background: var(--glass-bg);
             border: 2px solid var(--neon-pink);
             border-radius: 20px;
-            padding: 30px;
+            padding: 40px 30px;
             text-align: center;
-            max-width: 400px;
+            max-width: 420px;
             width: 100%;
-            box-shadow: 0 0 50px rgba(255, 0, 189, 0.3);
+            box-shadow: 0 0 60px rgba(255, 0, 189, 0.4);
         }
 
         .modal-btn {
             background: var(--neon-pink);
             color: #fff;
-            padding: 12px;
+            padding: 15px;
             border: none;
-            border-radius: 4px;
-            font-weight: 700;
-            font-size: 1rem;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 1.1rem;
             text-transform: uppercase;
             width: 100%;
             cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 189, 0.3);
         }
     </style>
 </head>
@@ -421,7 +427,7 @@
         <div class="card">
             <div class="header-top">
                 <h1>MindMatrix</h1>
-                <p class="subtitle">AI Logic Console v3.0</p>
+                <p class="subtitle">AI Logic Console v3.1</p>
             </div>
 
             <div class="q-timer-container">
@@ -450,9 +456,11 @@
 
     <div id="failure-modal">
         <div class="modal-content">
-            <h2 style="color:var(--neon-pink); margin-bottom:15px; font-family:'JetBrains Mono'">CRITICAL FAILURE</h2>
-            <p style="margin-bottom:25px;">Neural Buffer Overload. 5 consecutive logic mismatches.</p>
-            <button class="modal-btn" onclick="tryAgain()">Reactivate</button>
+            <h2 style="color:var(--neon-pink); margin-bottom:20px; font-family:'JetBrains Mono'; font-size: 2rem;">
+                CRITICAL FAILURE</h2>
+            <p style="margin-bottom:30px; font-size: 1.15rem;">Neural Buffer Overload.<br>5 consecutive mismatches
+                detected.</p>
+            <button class="modal-btn" onclick="tryAgain()">Reactivate Systems</button>
         </div>
     </div>
 
@@ -460,8 +468,8 @@
         const jsConfetti = new JSConfetti();
         const MODES = [
             { id: 'visual', name: 'Visual' },
-            { id: 'math', name: 'Math' },
-            { id: 'num-series', name: 'Series' },
+            { id: 'math', name: 'Neural' },
+            { id: 'num-series', name: 'Data' },
             { id: 'let-series', name: 'Codex' },
             { id: 'memory', name: 'Link' },
             { id: 'stroop', name: 'Signal' },
@@ -482,6 +490,7 @@
             incorrect: parseInt(localStorage.getItem('mm_incorrect_inf')) || 0
         };
         let isAnswered = false;
+        let isPlayback = false;
         let qTimerInterval;
         let qTimeLeft = 5;
         let memorySequence = [], userSequence = [];
@@ -550,6 +559,7 @@
             const area = document.getElementById('game-area');
             area.innerHTML = '';
             isAnswered = false;
+            isPlayback = false;
             resetQuestionTimer();
 
             let playMode = currentMode;
@@ -570,7 +580,7 @@
         }
 
         function submitAnswer(isCorrect, element) {
-            if (isAnswered) return;
+            if (isAnswered || isPlayback) return;
             isAnswered = true;
             clearInterval(qTimerInterval);
             stats.attempts++;
@@ -578,7 +588,7 @@
             if (isCorrect) {
                 stats.correct++; consecutiveWrongs = 0;
                 if (element) element.classList.add('correct');
-                jsConfetti.addConfetti({ emojies: ['⚡', '🌌'], confettiNumber: 30 });
+                jsConfetti.addConfetti({ emojies: ['⚡', '🌌', '🚀'], confettiNumber: 40 });
             } else {
                 stats.incorrect++; consecutiveWrongs++;
                 if (element) element.classList.add('wrong');
@@ -603,7 +613,7 @@
         }
 
         function genVisual(area) {
-            const size = Math.floor(Math.random() * 4) + 4; // 4 to 7
+            const size = Math.floor(Math.random() * 3) + 4; // 4 to 6 for mobile comfort
             const sub = allSymbols.slice(0, size);
             const grid = [];
             for (let i = 0; i < size; i++) grid.push(sub.map((_, j) => sub[(i + j) % size]));
@@ -614,17 +624,12 @@
             wrap.className = 'visual-grid';
             wrap.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
 
-            const areaW = area.clientWidth || window.innerWidth;
-            const cellSize = Math.floor(Math.min(areaW * 0.85, 250) / size) - 4;
-            wrap.style.width = (cellSize + 4) * size + 'px';
-
             for (let i = 0; i < size; i++) {
                 for (let j = 0; j < size; j++) {
                     const cell = document.createElement('div');
                     cell.className = 'grid-cell';
-                    cell.style.width = cellSize + 'px'; cell.style.height = cellSize + 'px';
-                    cell.style.fontSize = Math.floor(cellSize * 0.6) + 'px';
-                    if (i === r && j === c) { cell.innerText = '?'; cell.classList.add('active-cell'); } else cell.innerText = grid[i][j];
+                    cell.style.fontSize = `clamp(1.2rem, ${25 / size}vw, 2.5rem)`;
+                    if (i === r && j === c) { cell.innerText = '?'; cell.style.color = 'var(--neon-pink)'; } else cell.innerText = grid[i][j];
                     wrap.appendChild(cell);
                 }
             }
@@ -676,12 +681,15 @@
 
         function genMemory(area) {
             clearInterval(qTimerInterval);
+            isPlayback = true;
             const title = document.createElement('div');
             title.className = 'puzzle-title';
-            title.innerText = 'MEMORIZE';
+            title.innerText = 'MEMORIZING DATA...';
             area.appendChild(title);
+
             const grid = document.createElement('div');
             grid.className = 'memory-grid';
+            grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
             const cells = [];
             for (let i = 0; i < 9; i++) {
                 const c = document.createElement('div');
@@ -691,39 +699,51 @@
                 cells.push(c);
             }
             area.appendChild(grid);
+
             memorySequence = [];
             for (let i = 0; i < 4; i++) memorySequence.push(Math.floor(Math.random() * 9));
             userSequence = [];
+
             let j = 0;
             const playback = setInterval(() => {
                 const idx = memorySequence[j];
                 cells[idx].classList.add('active-cell');
-                setTimeout(() => cells[idx].classList.remove('active-cell'), 400);
+                setTimeout(() => cells[idx].classList.remove('active-cell'), 500);
                 j++;
-                if (j >= memorySequence.length) { clearInterval(playback); title.innerText = 'REPEAT'; resetQuestionTimer(); }
-            }, 800);
+                if (j >= memorySequence.length) {
+                    clearInterval(playback);
+                    setTimeout(() => {
+                        isPlayback = false;
+                        title.innerText = 'REPLICATE BUFFER';
+                        resetQuestionTimer();
+                    }, 600);
+                }
+            }, 1000);
         }
 
         function handleMemoryClick(idx, el) {
-            if (isAnswered) return;
+            if (isAnswered || isPlayback) return;
             userSequence.push(idx);
             el.classList.add('active-cell');
-            setTimeout(() => el.classList.remove('active-cell'), 200);
-            if (userSequence.length === memorySequence.length) submitAnswer(JSON.stringify(userSequence) === JSON.stringify(memorySequence), el);
+            setTimeout(() => el.classList.remove('active-cell'), 250);
+            if (userSequence.length === memorySequence.length) {
+                submitAnswer(JSON.stringify(userSequence) === JSON.stringify(memorySequence), el);
+            }
         }
 
         function genStroop(area) {
             const mode = Math.random() > 0.5 ? 'color' : 'word';
             const tI = Math.floor(Math.random() * colorsArr.length);
-            const cI = (tI + 1) % colorsArr.length;
+            const cI = (tI + 2) % colorsArr.length;
             const title = document.createElement('div');
             title.className = 'puzzle-title';
-            title.innerText = mode === 'color' ? 'INK COLOR?' : 'WORD?';
+            title.innerText = mode === 'color' ? 'IDENTIFY INK COLOR' : 'IDENTIFY WRITTEN WORD';
             area.appendChild(title);
             const word = document.createElement('div');
             word.className = 'stroop-word';
             word.innerText = colorsArr[tI];
             word.style.color = colorHex[colorsArr[cI]];
+            word.style.textShadow = `0 0 15px ${colorHex[colorsArr[cI]]}88`;
             area.appendChild(word);
             const correct = mode === 'color' ? colorsArr[cI] : colorsArr[tI];
             createOptions(correct, colorsArr.filter(c => c !== correct).slice(0, 3), area);
@@ -731,10 +751,10 @@
 
         function genSymbolMath(area) {
             const e1 = emojis[Math.floor(Math.random() * emojis.length)], e2 = emojis[(Math.floor(Math.random() * emojis.length) + 1) % emojis.length];
-            const v1 = Math.floor(Math.random() * 10) + 1, v2 = Math.floor(Math.random() * 10) + 1;
+            const v1 = Math.floor(Math.random() * 10) + 2, v2 = Math.floor(Math.random() * 10) + 2;
             const box = document.createElement('div');
             box.className = 'equation-box';
-            box.innerHTML = `${e1} + ${e1} = ${v1 * 2}<br>${e1} + ${e2} = ${v1 + v2}<br>Value of ${e2}?`;
+            box.innerHTML = `<span style="color:var(--neon-cyan)">${e1}</span> + ${e1} = ${v1 * 2}<br>${e1} + <span style="color:var(--neon-purple)">${e2}</span> = ${v1 + v2}<br>Value of ${e2}?`;
             area.appendChild(box);
             createOptions(v2.toString(), [v1.toString(), (v2 + 1).toString(), (v2 - 1).toString()], area);
         }
@@ -745,10 +765,10 @@
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
                 osc.connect(gain); gain.connect(audioCtx.destination);
-                if (type === 'success') { osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); }
-                else { osc.frequency.setValueAtTime(120, audioCtx.currentTime); }
-                gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                if (type === 'success') { osc.frequency.setValueAtTime(523, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1046, audioCtx.currentTime + 0.1); }
+                else { osc.frequency.setValueAtTime(150, audioCtx.currentTime); }
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.4);
             } catch (e) { }
         }
